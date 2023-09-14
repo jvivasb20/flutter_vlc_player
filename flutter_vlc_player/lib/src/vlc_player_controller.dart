@@ -36,6 +36,9 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
   /// The video should be played automatically.
   final bool autoPlay;
 
+  // Whether or not to allow background audio playback.
+  final bool allowBackgroundPlayback;
+
   /// Initialize vlc player when the platform is ready automatically
   final bool autoInitialize;
 
@@ -91,14 +94,13 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
   VlcPlayerController.asset(
     this.dataSource, {
     this.autoInitialize = true,
+    this.allowBackgroundPlayback = false,
     this.package,
     this.hwAcc = HwAcc.auto,
     this.autoPlay = true,
     this.options,
-    @Deprecated('Please, use the addOnInitListener method instead.')
-    VoidCallback? onInit,
-    @Deprecated('Please, use the addOnRendererEventListener method instead.')
-    RendererCallback? onRendererHandler,
+    @Deprecated('Please, use the addOnInitListener method instead.') VoidCallback? onInit,
+    @Deprecated('Please, use the addOnRendererEventListener method instead.') RendererCallback? onRendererHandler,
   })  : _dataSourceType = DataSourceType.asset,
         _onInit = onInit,
         _onRendererHandler = onRendererHandler,
@@ -114,11 +116,10 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     this.autoInitialize = true,
     this.hwAcc = HwAcc.auto,
     this.autoPlay = true,
+    this.allowBackgroundPlayback = false,
     this.options,
-    @Deprecated('Please, use the addOnInitListener method instead.')
-    VoidCallback? onInit,
-    @Deprecated('Please, use the addOnRendererEventListener method instead.')
-    RendererCallback? onRendererHandler,
+    @Deprecated('Please, use the addOnInitListener method instead.') VoidCallback? onInit,
+    @Deprecated('Please, use the addOnRendererEventListener method instead.') RendererCallback? onRendererHandler,
   })  : package = null,
         _dataSourceType = DataSourceType.network,
         _onInit = onInit,
@@ -134,11 +135,10 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     this.autoInitialize = true,
     this.hwAcc = HwAcc.auto,
     this.autoPlay = true,
+    this.allowBackgroundPlayback = false,
     this.options,
-    @Deprecated('Please, use the addOnInitListener method instead.')
-    VoidCallback? onInit,
-    @Deprecated('Please, use the addOnRendererEventListener method instead.')
-    RendererCallback? onRendererHandler,
+    @Deprecated('Please, use the addOnInitListener method instead.') VoidCallback? onInit,
+    @Deprecated('Please, use the addOnRendererEventListener method instead.') RendererCallback? onRendererHandler,
   })  : dataSource = 'file://${file.path}',
         package = null,
         _dataSourceType = DataSourceType.file,
@@ -264,9 +264,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
             spuTracksCount: event.spuTracksCount,
             activeSpuTrack: event.activeSpuTrack,
             isPlaying: event.isPlaying,
-            playingState: (event.isPlaying ?? false)
-                ? PlayingState.playing
-                : value.playingState,
+            playingState: (event.isPlaying ?? false) ? PlayingState.playing : value.playingState,
             errorDescription: VlcPlayerValue.noError,
           );
           break;
@@ -301,9 +299,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
       }
     }
 
-    vlcPlayerPlatform
-        .mediaEventsFor(_viewId)
-        .listen(mediaEventListener, onError: errorListener);
+    vlcPlayerPlatform.mediaEventsFor(_viewId).listen(mediaEventListener, onError: errorListener);
 
     // listen for renderer devices events
     void rendererEventListener(VlcRendererEvent event) {
@@ -561,8 +557,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
   /// Returns current vlc volume level.
   Future<int> getVolume() async {
     _throwIfNotInitialized('getVolume');
-    final volume =
-        await (vlcPlayerPlatform.getVolume(_viewId) as FutureOr<int>);
+    final volume = await (vlcPlayerPlatform.getVolume(_viewId) as FutureOr<int>);
     value = value.copyWith(volume: volume.clamp(0, _maxVolume));
 
     return volume;
@@ -719,8 +714,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
   /// Returns the number of audio tracks
   Future<int?> getAudioTracksCount() async {
     _throwIfNotInitialized('getAudioTracksCount');
-    final audioTracksCount =
-        await vlcPlayerPlatform.getAudioTracksCount(_viewId);
+    final audioTracksCount = await vlcPlayerPlatform.getAudioTracksCount(_viewId);
     value = value.copyWith(audioTracksCount: audioTracksCount);
 
     return audioTracksCount;
@@ -819,8 +813,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
   /// Returns the number of video tracks
   Future<int?> getVideoTracksCount() async {
     _throwIfNotInitialized('getVideoTracksCount');
-    final videoTracksCount =
-        await vlcPlayerPlatform.getVideoTracksCount(_viewId);
+    final videoTracksCount = await vlcPlayerPlatform.getVideoTracksCount(_viewId);
     value = value.copyWith(videoTracksCount: videoTracksCount);
 
     return videoTracksCount;

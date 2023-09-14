@@ -128,6 +128,7 @@ final class FlutterVlcPlayer implements PlatformView {
         this.options = options; 
         libVLC = new LibVLC(context, options);
         mediaPlayer = new MediaPlayer(libVLC);
+        mediaPlayer.setAudioDigitalOutputEnabled(true);
         setupVlcMediaPlayer();
     }
 
